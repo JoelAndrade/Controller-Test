@@ -3,6 +3,8 @@ add_library(lib_QT INTERFACE)
 target_include_directories(lib_QT INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/QtWidgets
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/QtGui
+    ${CMAKE_CURRENT_SOURCE_DIR}/QT
 )
 
 target_link_directories(lib_QT INTERFACE
