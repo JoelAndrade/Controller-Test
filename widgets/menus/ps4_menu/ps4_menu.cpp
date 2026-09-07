@@ -12,6 +12,10 @@ PS4Test::PS4Test(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
     QPushButton *stick_checkout = new QPushButton("Stick Checkout", this);
     QPushButton *trigger_checkout = new QPushButton("Trigger Checkout", this);
     QPushButton *exit = new QPushButton("Exit", this);
+    stick_checkout->setMaximumHeight(100);
+    trigger_checkout->setMaximumHeight(100);
+    exit->setMaximumHeight(100);
+    
     connect(stick_checkout, &QPushButton::clicked, this, &PS4Test::stick_checkout_pressed);
     connect(trigger_checkout, &QPushButton::clicked, this, &PS4Test::trigger_checkout_pressed);
     connect(exit, &QPushButton::clicked, this, &PS4Test::exit_pressed);
@@ -25,7 +29,7 @@ PS4Test::PS4Test(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
 
 void PS4Test::stick_checkout_pressed(void)
 {
-    std::cout << "Pressed stick checkout" << std::endl;
+    stack_w->setCurrentIndex(2);
 }
 
 void PS4Test::trigger_checkout_pressed(void)

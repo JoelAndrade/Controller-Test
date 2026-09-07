@@ -1,0 +1,1 @@
+add_subdirectory(ps4_menu)

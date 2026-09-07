@@ -1,0 +1,2 @@
+add_subdirectory(menus)
+add_subdirectory(sdl_widgets)
