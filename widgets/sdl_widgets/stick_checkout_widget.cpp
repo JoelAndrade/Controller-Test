@@ -1,11 +1,14 @@
-#include "sdl_main_widget.h"
+#include "stick_checkout_widget.h"
 
 #include <QT_Util.h>
 #include <iostream>
 #include <windows.h>
 
-SDLWindow::SDLWindow(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
+StickCheckoutW::StickCheckoutW(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
 {
+    this->parent = parent;
+    this->stack_w = stack_w;
+
     resize(1000, 700);
 
     // Make sure the HWND exists.
@@ -15,7 +18,7 @@ SDLWindow::SDLWindow(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
     startSDL();
 }
 
-void SDLWindow::resizeEvent(QResizeEvent *event)
+void StickCheckoutW::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
 
@@ -24,7 +27,17 @@ void SDLWindow::resizeEvent(QResizeEvent *event)
     sendResize();
 }
 
-void SDLWindow::startSDL()
+void StickCheckoutW::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape)
+    {
+        stack_w->setCurrentWidget(parent);
+    }
+
+    QWidget::keyPressEvent(event);
+}
+
+void StickCheckoutW::startSDL()
 {
     HWND hwnd = (HWND)(this->winId());
 
@@ -35,13 +48,13 @@ void SDLWindow::startSDL()
     sdlProcess = new QProcess(this);
 
     // Start the SDL executable.
-    sdlProcess->start( "tests/bin/sdl_main.exe", { "--extern", hwndString});
+    sdlProcess->start( "tests/bin/stick_checkout.exe", { "--extern", hwndString});
 
     connect(sdlProcess, &QProcess::started, this, [this]() { qDebug() << "SDL process started"; });
     connect( sdlProcess, &QProcess::finished, this, [this]() { qDebug() << "SDL process finished"; });
 }
 
-void SDLWindow::sendResize()
+void StickCheckoutW::sendResize()
 {
     if (!sdlProcess || (sdlProcess->state() != QProcess::Running))
         return;

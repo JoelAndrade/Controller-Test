@@ -29,8 +29,25 @@ PS4Test::PS4Test(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
 
 void PS4Test::stick_checkout_pressed(void)
 {
-    stack_w->setCurrentIndex(2);
+    if (!stick_child)
+    {
+        std::cout << "child not connected" << std::endl;\
+        return;
+    }
+
+    stack_w->setCurrentWidget(stick_child);
 }
+
+void PS4Test::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape)
+    {
+        stack_w->setCurrentWidget(parent);
+    }
+
+    QWidget::keyPressEvent(event);
+}
+
 
 void PS4Test::trigger_checkout_pressed(void)
 {

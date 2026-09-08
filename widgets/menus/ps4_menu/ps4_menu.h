@@ -7,7 +7,13 @@
 class PS4Test : public QWidget
 {
 public:
+    QWidget *stick_child;
+    QWidget *trigger_child;
+
     PS4Test(QStackedWidget *stack_w, QWidget *parent = nullptr);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     QWidget *parent;

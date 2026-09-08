@@ -1,5 +1,5 @@
 #include "widgets/menus/ps4_menu/ps4_menu.h"
-#include "widgets/sdl_widgets/sdl_main_widget.h"
+#include "widgets/sdl_widgets/stick_checkout_widget.h"
 
 #include <QT_Util.h>
 #include <iostream>
@@ -30,9 +30,20 @@ int main(int argc, char *argv[])
     main_menu_layout->addWidget(ps4_button);
     main_menu_layout->addWidget(xbox_button);
     main_menu_layout->addWidget(switch_button);
-
-    // Setup ps4 menu
+    
+    // Setup custom widgets
     PS4Test *ps4_test = new PS4Test(stack_w, main_menu);
+    StickCheckoutW *sdl_window = new StickCheckoutW(stack_w, ps4_test);
+
+    // connect childs
+    ps4_test->stick_child = sdl_window;
+    
+    // Add all menus to stack_w
+    stack_w->addWidget(main_menu);
+    stack_w->addWidget(ps4_test);
+    stack_w->addWidget(sdl_window);
+
+    // connect main menu buttons
     QObject::connect(ps4_button, &QPushButton::clicked, [stack_w, ps4_test]() {
         stack_w->setCurrentWidget(ps4_test);
     });
@@ -46,14 +57,7 @@ int main(int argc, char *argv[])
     QObject::connect(switch_button, &QPushButton::clicked, []() {
         std::cout << "Pressed switch Button" << std::endl;
     });
-    
-    // Setup sdl widgets
-    SDLWindow *sdl_window = new SDLWindow(stack_w, ps4_test);
 
-    // Add all menus to stack_w
-    stack_w->addWidget(main_menu);
-    stack_w->addWidget(ps4_test);
-    stack_w->addWidget(sdl_window);
     
     // Final setup for window
     window.setCentralWidget(stack_w);

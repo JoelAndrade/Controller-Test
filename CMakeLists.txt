@@ -14,7 +14,7 @@ add_executable(main main.cpp)
 
 target_link_libraries(main
     lib_ps4_menu
-    lib_sdl_widgets
+    lib_stick_checkout_w
     lib_SDL2
     lib_QT
     mingw32
