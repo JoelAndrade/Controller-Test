@@ -12,6 +12,9 @@
 #define FPS (500)
 
 bool run_external = true;
+Window window;
+
+static void run_stick_checkout(void);
 
 int main(int argc, char *argv[])
 {
@@ -39,7 +42,6 @@ int main(int argc, char *argv[])
     // Initialize SDL.
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    Window window;
     if (run_external)
     {
         //SDL_CreateWindowFrom() wraps an existing native window. SDL does NOT create the HWND itself here.
@@ -71,6 +73,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    run_stick_checkout();
+
+    SDL_DestroyRenderer(window.renderer);
+    SDL_DestroyWindow(window.window);
+    SDL_Quit();
+
+    return 0;
+}
+
+static void run_stick_checkout(void)
+{
     Uint32 starting_tick;
     SDL_Event event;
 
@@ -110,10 +123,4 @@ int main(int argc, char *argv[])
 
         frame_cap(FPS, starting_tick);
     }
-
-    SDL_DestroyRenderer(window.renderer);
-    SDL_DestroyWindow(window.window);
-    SDL_Quit();
-
-    return 0;
 }

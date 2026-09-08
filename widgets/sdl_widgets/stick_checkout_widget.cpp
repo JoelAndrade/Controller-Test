@@ -11,11 +11,10 @@ StickCheckoutW::StickCheckoutW(QStackedWidget *stack_w, QWidget *parent) : QWidg
 
     resize(1000, 700);
 
-    // Make sure the HWND exists.
-    this->setAttribute(Qt::WA_NativeWindow);
-    this->winId();
+    sdl_process = new QProcess(this);
 
-    startSDL();
+    connect(sdl_process, &QProcess::started, this, [this]() { qDebug() << "SDL process started"; });
+    connect(sdl_process, &QProcess::finished, this, [this]() { qDebug() << "SDL process finished"; });
 }
 
 void StickCheckoutW::resizeEvent(QResizeEvent *event)
@@ -24,39 +23,48 @@ void StickCheckoutW::resizeEvent(QResizeEvent *event)
 
     // Put resizing code here if nessary
 
-    sendResize();
+    send_resize();
 }
 
 void StickCheckoutW::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape)
     {
+        sdl_process->kill();
         stack_w->setCurrentWidget(parent);
     }
 
     QWidget::keyPressEvent(event);
 }
 
-void StickCheckoutW::startSDL()
+void StickCheckoutW::showEvent(QShowEvent *event)
+{
+    if (sdl_process->state() != QProcess::Running)
+    {
+        start_SDL();
+    }
+
+    QWidget::showEvent(event);
+    
+    // Widget has been made visible
+    qDebug() << "Widget shown";
+}
+
+void StickCheckoutW::start_SDL()
 {
     HWND hwnd = (HWND)(this->winId());
 
     // Convert HWND to a string.
-    quintptr hwndValue = (quintptr)hwnd;
-    QString hwndString = QString::number(hwndValue);
-
-    sdlProcess = new QProcess(this);
+    quintptr hwnd_value = (quintptr)hwnd;
+    QString hwnd_string = QString::number(hwnd_value);
 
     // Start the SDL executable.
-    sdlProcess->start( "tests/bin/stick_checkout.exe", { "--extern", hwndString});
-
-    connect(sdlProcess, &QProcess::started, this, [this]() { qDebug() << "SDL process started"; });
-    connect( sdlProcess, &QProcess::finished, this, [this]() { qDebug() << "SDL process finished"; });
+    sdl_process->start("tests/bin/stick_checkout.exe", { "--extern", hwnd_string});
 }
 
-void StickCheckoutW::sendResize()
+void StickCheckoutW::send_resize()
 {
-    if (!sdlProcess || (sdlProcess->state() != QProcess::Running))
+    if (!sdl_process || (sdl_process->state() != QProcess::Running))
         return;
 
     int width = this->width();

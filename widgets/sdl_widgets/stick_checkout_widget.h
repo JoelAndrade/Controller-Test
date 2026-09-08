@@ -12,17 +12,17 @@ public:
 
 
 protected:
-void resizeEvent(QResizeEvent *event) override;
-void keyPressEvent(QKeyEvent *event);
-
+    void resizeEvent(QResizeEvent *event) override;
+    void keyPressEvent(QKeyEvent *event);
+    void showEvent(QShowEvent *event);
 
 private:
     QWidget *parent;
-    QProcess *sdlProcess;
+    QProcess *sdl_process;
     QStackedWidget *stack_w;
 
-    void startSDL(void);
-    void sendResize(void);
+    void start_SDL(void);
+    void send_resize(void);
 };
 
 #endif // STICK_CHECKOUT_W_H
