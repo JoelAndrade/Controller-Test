@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
     HWND hwnd = nullptr;
 
-    // Find --parent argument.
+    // Find --extern argument.
     for (int i = 1; i < argc; ++i)
     {
         if ((std::string(argv[i]) == "--extern") && (argc > i + 1))
@@ -83,6 +83,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1"); // Allow background joy stick inputs
+
     run_stick_checkout();
 
     SDL_DestroyRenderer(window.renderer);
@@ -99,39 +101,28 @@ static void run_stick_checkout(void)
         
     bool run = true;
     
-    SDL_Joystick *ps4_controller = NULL;
+    SDL_GameController *ps4_controller = NULL;
 
     SDL_Rect left_containter_rect;
-    left_containter_rect.x = LEFT_RECT_X;
-    left_containter_rect.y = LEFT_RECT_Y;
     left_containter_rect.w = 2*radius + 1;
     left_containter_rect.h = 2*radius + 1;
-    rect_make_dimensions(&left_containter_rect);
-    rect_shiftXY(&left_containter_rect);
 
     SDL_Rect right_containter_rect;
-    right_containter_rect.x = RIGHT_RECT_X;
-    right_containter_rect.y = RIGHT_RECT_Y;
     right_containter_rect.w = 2*radius + 1;
     right_containter_rect.h = 2*radius + 1;
-    rect_make_dimensions(&right_containter_rect);
-    rect_shiftXY(&right_containter_rect);
 
     SDL_Rect left_point_rect;
-    left_point_rect.x = LEFT_RECT_X;
-    left_point_rect.y = LEFT_RECT_Y;
     left_point_rect.w = 5;
     left_point_rect.h = 5;
-    rect_make_dimensions(&left_point_rect);
-    rect_shiftXY(&left_point_rect);
 
     SDL_Rect right_point_rect;
-    right_point_rect.x = RIGHT_RECT_X;
-    right_point_rect.y = RIGHT_RECT_Y;
     right_point_rect.w = 5;
     right_point_rect.h = 5;
-    rect_make_dimensions(&right_point_rect);
-    rect_shiftXY(&right_point_rect);
+
+    bool left_detect_x = false;
+    bool left_detect_y = false;
+    bool right_detect_x = false;
+    bool right_detect_y = false;
 
     if (SDL_NumJoysticks() < 1)
     {
@@ -139,7 +130,7 @@ static void run_stick_checkout(void)
     }
     else
     {
-        ps4_controller = SDL_JoystickOpen(0);
+        ps4_controller = SDL_GameControllerOpen(0);
     }
     
     while (run)
@@ -170,62 +161,77 @@ static void run_stick_checkout(void)
                     left_point_rect.x = map_stick_input_to_screen_pos(event.jaxis.value, LEFT_RECT_X);
                     rect_make_dimensions(&left_point_rect);
                     rect_shiftX(&left_point_rect);
-
-                    // std::cout << "x: " << event.jaxis.value << std::endl;
+                    left_detect_x = true;
                 }
                 else if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
                 {
                     left_point_rect.y = map_stick_input_to_screen_pos(event.jaxis.value, LEFT_RECT_Y);
                     rect_make_dimensions(&left_point_rect);
                     rect_shiftY(&left_point_rect);
-                    // std::cout << "y: " << event.jaxis.value << std::endl;
+                    left_detect_y = true;
                 }
                 else if (event.jaxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
                 {
                     right_point_rect.x = map_stick_input_to_screen_pos(event.jaxis.value, RIGHT_RECT_X);
                     rect_make_dimensions(&right_point_rect);
                     rect_shiftX(&right_point_rect);
-
-                    // std::cout << "x: " << event.jaxis.value << std::endl;
+                    right_detect_x = true;
                 }
                 else if (event.jaxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
                 {
                     right_point_rect.y = map_stick_input_to_screen_pos(event.jaxis.value, RIGHT_RECT_Y);
                     rect_make_dimensions(&right_point_rect);
                     rect_shiftY(&right_point_rect);
-                    
-                    // std::cout << "y: " << event.jaxis.value << std::endl;
+                    right_detect_y = true;
                 }
             }
         }
 
         window.get_window_size();
+
+        left_containter_rect.x = LEFT_RECT_X;
+        left_containter_rect.y = LEFT_RECT_Y;
+        rect_make_dimensions(&left_containter_rect);
+        rect_shiftXY(&left_containter_rect);
+
+        right_containter_rect.x = RIGHT_RECT_X;
+        right_containter_rect.y = RIGHT_RECT_Y;
+        rect_make_dimensions(&right_containter_rect);
+        rect_shiftXY(&right_containter_rect);
+
         window.clear_render();
         
+        // Draw the the box cross
         window.draw_line(LEFT_RECT_X - radius, LEFT_RECT_Y,
                          LEFT_RECT_X + radius, LEFT_RECT_Y,
-                        SDL_Color{0, 255, 0, 255}, 2, 2);
+                         SDL_green, 2, 2);
 
         window.draw_line(LEFT_RECT_X, LEFT_RECT_Y - radius,
                          LEFT_RECT_X, LEFT_RECT_Y + radius,
-                        SDL_Color{0, 255, 0, 255}, 2, 2);
-
+                         SDL_green, 2, 2);
 
         window.draw_line(RIGHT_RECT_X - radius, RIGHT_RECT_Y,
                          RIGHT_RECT_X + radius, RIGHT_RECT_Y,
-                        SDL_Color{0, 255, 0, 255}, 2, 2);
+                         SDL_green, 2, 2);
 
         window.draw_line(RIGHT_RECT_X, RIGHT_RECT_Y - radius,
                          RIGHT_RECT_X, RIGHT_RECT_Y + radius,
-                        SDL_Color{0, 255, 0, 255}, 2, 2);
-                        
+                         SDL_green, 2, 2);
 
-        window.draw_rect(SDL_Color{0, 250, 250, 255}, left_containter_rect, 2, 2);
-        window.draw_rect(SDL_Color{0, 250, 250, 255}, right_containter_rect, 2, 2);
+        // draw containers
+        window.draw_rect(SDL_cyan, left_containter_rect, 2, 2);
+        window.draw_rect(SDL_cyan, right_containter_rect, 2, 2);
 
-        window.fill_rect(SDL_Color{255, 0, 255, 255}, left_point_rect, 1, 1);
-        window.fill_rect(SDL_Color{255, 0, 255, 255}, right_point_rect, 1, 1);
-        
+        // draw the points
+        if (left_detect_x && left_detect_y)
+        {
+            window.fill_rect(SDL_violet, left_point_rect, 1, 1);
+        }
+        if (right_detect_x && right_detect_y)
+        {
+            window.fill_rect(SDL_violet, right_point_rect, 1, 1);
+        }
+
         window.render();
 
         frame_cap(PULLING_RATE, starting_tick);
