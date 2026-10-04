@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 
     // Initialize SDL.
     SDL_Init(SDL_INIT_EVERYTHING);
+    TTF_Init();
 
     if (run_external)
     {
@@ -119,6 +120,24 @@ static void run_stick_checkout(void)
     right_point_rect.w = 5;
     right_point_rect.h = 5;
 
+    TextureText left_stick_x_text(window.renderer, "fonts/arial.ttf", "X:", 35, 2*window.w/50, window.h/15);
+    left_stick_x_text.change_color(SDL_white);
+    left_stick_x_text.create_texture();
+
+    TextureText left_stick_y_text(window.renderer, "fonts/arial.ttf", "Y:", 35, 13*window.w/50, window.h/15);
+    left_stick_y_text.change_color(SDL_white);
+    left_stick_y_text.create_texture();
+
+    TextureText right_stick_x_text(window.renderer, "fonts/arial.ttf", "X:", 35, 27*window.w/50, window.h/15);
+    right_stick_x_text.change_color(SDL_white);
+    right_stick_x_text.create_texture();
+
+    TextureText right_stick_y_text(window.renderer, "fonts/arial.ttf", "Y:", 35, 38*window.w/50, window.h/15);
+    right_stick_y_text.change_color(SDL_white);
+    right_stick_y_text.create_texture();
+
+    std::string pot_value;
+
     bool left_detect_x = false;
     bool left_detect_y = false;
     bool right_detect_x = false;
@@ -158,6 +177,10 @@ static void run_stick_checkout(void)
             {
                 if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
                 {
+                    pot_value = "X: ";
+                    pot_value.append(std::to_string(event.jaxis.value));
+                    left_stick_x_text.change_text(pot_value);
+                    
                     left_point_rect.x = map_stick_input_to_screen_pos(event.jaxis.value, LEFT_RECT_X);
                     rect_make_dimensions(&left_point_rect);
                     rect_shiftX(&left_point_rect);
@@ -165,6 +188,10 @@ static void run_stick_checkout(void)
                 }
                 else if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
                 {
+                    pot_value = "Y: ";
+                    pot_value.append(std::to_string(-event.jaxis.value));
+                    left_stick_y_text.change_text(pot_value);
+                    
                     left_point_rect.y = map_stick_input_to_screen_pos(event.jaxis.value, LEFT_RECT_Y);
                     rect_make_dimensions(&left_point_rect);
                     rect_shiftY(&left_point_rect);
@@ -172,6 +199,10 @@ static void run_stick_checkout(void)
                 }
                 else if (event.jaxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
                 {
+                    pot_value = "X: ";
+                    pot_value.append(std::to_string(event.jaxis.value));
+                    right_stick_x_text.change_text(pot_value);
+                    
                     right_point_rect.x = map_stick_input_to_screen_pos(event.jaxis.value, RIGHT_RECT_X);
                     rect_make_dimensions(&right_point_rect);
                     rect_shiftX(&right_point_rect);
@@ -179,6 +210,10 @@ static void run_stick_checkout(void)
                 }
                 else if (event.jaxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
                 {
+                    pot_value = "Y: ";
+                    pot_value.append(std::to_string(-event.jaxis.value));
+                    right_stick_y_text.change_text(pot_value);
+                    
                     right_point_rect.y = map_stick_input_to_screen_pos(event.jaxis.value, RIGHT_RECT_Y);
                     rect_make_dimensions(&right_point_rect);
                     rect_shiftY(&right_point_rect);
@@ -189,6 +224,7 @@ static void run_stick_checkout(void)
 
         window.get_window_size();
 
+        // Adjust for resizing
         left_containter_rect.x = LEFT_RECT_X;
         left_containter_rect.y = LEFT_RECT_Y;
         rect_make_dimensions(&left_containter_rect);
@@ -198,6 +234,11 @@ static void run_stick_checkout(void)
         right_containter_rect.y = RIGHT_RECT_Y;
         rect_make_dimensions(&right_containter_rect);
         rect_shiftXY(&right_containter_rect);
+
+        left_stick_x_text.change_pos(2*window.w/50, window.h/15);
+        left_stick_y_text.change_pos(13*window.w/50, window.h/15);
+        right_stick_x_text.change_pos(27*window.w/50, window.h/15);
+        right_stick_y_text.change_pos(38*window.w/50, window.h/15);
 
         window.clear_render();
         
@@ -231,6 +272,11 @@ static void run_stick_checkout(void)
         {
             window.fill_rect(SDL_violet, right_point_rect, 1, 1);
         }
+
+        left_stick_x_text.render();
+        left_stick_y_text.render();
+        right_stick_x_text.render();
+        right_stick_y_text.render();
 
         window.render();
 
