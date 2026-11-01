@@ -9,6 +9,7 @@ class PS4Test : public QWidget
 public:
     QWidget *stick_child;
     QWidget *trigger_child;
+    QWidget *button_child;
 
     PS4Test(QStackedWidget *stack_w, QWidget *parent = nullptr);
 
@@ -21,6 +22,7 @@ private:
 
     void stick_checkout_pressed(void);
     void trigger_checkout_pressed(void);
+    void button_checkout_pressed(void);
     void exit_pressed(void);
 };
 

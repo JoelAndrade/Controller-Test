@@ -11,19 +11,23 @@ PS4Test::PS4Test(QStackedWidget *stack_w, QWidget *parent) : QWidget(parent)
     // Create buttons
     QPushButton *stick_checkout = new QPushButton("Stick Checkout", this);
     QPushButton *trigger_checkout = new QPushButton("Trigger Checkout", this);
+    QPushButton *button_checkout = new QPushButton("Button Checkout", this);
     QPushButton *exit = new QPushButton("Exit", this);
     stick_checkout->setMaximumHeight(100);
     trigger_checkout->setMaximumHeight(100);
+    button_checkout->setMaximumHeight(100);
     exit->setMaximumHeight(100);
     
     connect(stick_checkout, &QPushButton::clicked, this, &PS4Test::stick_checkout_pressed);
     connect(trigger_checkout, &QPushButton::clicked, this, &PS4Test::trigger_checkout_pressed);
+    connect(button_checkout, &QPushButton::clicked, this, &PS4Test::button_checkout_pressed);
     connect(exit, &QPushButton::clicked, this, &PS4Test::exit_pressed);
     
     // Add to main layout
     QVBoxLayout *main_layout = new QVBoxLayout(this);
     main_layout->addWidget(stick_checkout);
     main_layout->addWidget(trigger_checkout);
+    main_layout->addWidget(button_checkout);
     main_layout->addWidget(exit);
 }
 
@@ -52,6 +56,17 @@ void PS4Test::keyPressEvent(QKeyEvent *event)
 void PS4Test::trigger_checkout_pressed(void)
 {
     std::cout << "Pressed trigger checkout" << std::endl;
+}
+
+void PS4Test::button_checkout_pressed(void)
+{
+    if (!button_child)
+    {
+        std::cout << "child not connected" << std::endl;
+        return;
+    }
+
+    stack_w->setCurrentWidget(button_child);
 }
 
 void PS4Test::exit_pressed(void)

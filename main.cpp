@@ -1,5 +1,5 @@
 #include "widgets/menus/ps4_menu/ps4_menu.h"
-#include "widgets/sdl_widgets/stick_checkout_widget.h"
+#include "widgets/sdl_widgets/sdl_wigets.h"
 
 #include <QT_Util.h>
 #include <iostream>
@@ -33,15 +33,18 @@ int main(int argc, char *argv[])
     
     // Setup custom widgets
     PS4Test *ps4_test = new PS4Test(stack_w, main_menu);
-    StickCheckoutW *sdl_window = new StickCheckoutW(stack_w, ps4_test);
+    StickCheckoutW *stick_checkout_window = new StickCheckoutW(stack_w, ps4_test);
+    ButtonCheckoutW *button_checkout_window = new ButtonCheckoutW(stack_w, ps4_test);
 
     // connect childs
-    ps4_test->stick_child = sdl_window;
+    ps4_test->stick_child = stick_checkout_window;
+    ps4_test->button_child = button_checkout_window;
     
     // Add all menus to stack_w
     stack_w->addWidget(main_menu);
     stack_w->addWidget(ps4_test);
-    stack_w->addWidget(sdl_window);
+    stack_w->addWidget(stick_checkout_window);
+    stack_w->addWidget(button_checkout_window);
 
     // connect main menu buttons
     QObject::connect(ps4_button, &QPushButton::clicked, [stack_w, ps4_test]() {
